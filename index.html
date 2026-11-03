@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechHub - Modern E-Commerce Store</title>
+    <link rel="stylesheet" href="ecommerce-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">TechHub</span>
+                <span class="logo-tagline">Premium Tech</span>
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#products" class="nav-link">Products</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search products..." class="search-input">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+
+                <!-- User Account Section -->
+                <div class="user-section">
+                    <!-- Login Button (shown when not logged in) -->
+                    <button class="login-btn" id="navLoginBtn" title="Login/Sign Up">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="login-text">Login</span>
+                    </button>
+
+                    <!-- User Profile (shown when logged in) -->
+                    <div class="user-profile" id="userProfile">
+                        <button class="profile-btn" id="profileBtn">
+                            <i class="fas fa-user-circle"></i>
+                            <span class="user-name" id="userName"></span>
+                        </button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <a href="#" class="dropdown-item" id="profileViewBtn">
+                                <i class="fas fa-id-card"></i> My Profile
+                            </a>
+                            <a href="#" class="dropdown-item" id="orderHistoryBtn">
+                                <i class="fas fa-history"></i> Order History
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item logout-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cart-icon" id="cartIcon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </div>
+
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>Shopping Cart</h2>
+            <button class="close-cart" id="closeCart">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p class="empty-cart">Your cart is empty</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong>Total:</strong>
+                <strong id="cartTotal">$0.00</strong>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+        <div class="modal-content login-modal-content">
+            <button class="modal-close" id="loginModalClose" aria-label="Close sign in">&times;</button>
+            <div class="modal-body auth-body">
+                <div class="auth-mark" aria-hidden="true">⚡</div>
+                <p class="auth-eyebrow">WELCOME BACK</p>
+                <h2 id="loginTitle">Sign in to TechHub</h2>
+                <p class="auth-intro">Sign in to continue to your account and orders.</p>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" required maxlength="254" autocomplete="email" placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <div class="password-field">
+                            <input type="password" id="loginPassword" required maxlength="128" autocomplete="current-password" placeholder="Enter your password">
+                            <button class="password-toggle" type="button" data-password-target="loginPassword" aria-label="Show password" aria-pressed="false">Show</button>
+                        </div>
+                    </div>
+                    <p class="auth-message" id="loginMessage" role="status" aria-live="polite"></p>
+                    <button type="submit" class="submit-btn">Login</button>
+                    <p class="signup-link">Don't have an account? <a href="#" id="switchToSignup">Sign up here</a></p>
+                </form>
+                <p class="account-notice">Account details are stored only in this browser and are not suitable for sensitive information.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
+        <div class="modal-content login-modal-content">
+            <button class="modal-close" id="signupModalClose" aria-label="Close sign up">&times;</button>
+            <div class="modal-body auth-body">
+                <div class="auth-mark" aria-hidden="true">⚡</div>
+                <p class="auth-eyebrow">JOIN TECHHUB</p>
+                <h2 id="signupTitle">Create your account</h2>
+                <p class="auth-intro">Save your details and keep track of your orders.</p>
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" required minlength="2" maxlength="80" autocomplete="name" placeholder="Your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" required maxlength="254" autocomplete="email" placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <div class="password-field">
+                            <input type="password" id="signupPassword" required minlength="8" maxlength="128" autocomplete="new-password" placeholder="At least 8 characters">
+                            <button class="password-toggle" type="button" data-password-target="signupPassword" aria-label="Show password" aria-pressed="false">Show</button>
+                        </div>
+                        <p class="field-hint">Use at least 8 characters.</p>
+                    </div>
+                    <p class="auth-message" id="signupMessage" role="status" aria-live="polite"></p>
+                    <button type="submit" class="submit-btn">Sign Up</button>
+                    <p class="signup-link">Already have an account? <a href="#" id="switchToLogin">Login here</a></p>
+                </form>
+                <p class="account-notice">Account details are stored only in this browser and are not suitable for sensitive information.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account dialogs -->
+    <div class="modal" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+        <div class="modal-content account-modal-content">
+            <button class="modal-close" id="profileModalClose" aria-label="Close profile">&times;</button>
+            <div class="modal-body account-modal-body">
+                <p class="auth-eyebrow">YOUR ACCOUNT</p>
+                <h2 id="profileModalTitle">My profile</h2>
+                <div class="account-detail"><span>Name</span><strong id="accountProfileName"></strong></div>
+                <div class="account-detail"><span>Email</span><strong id="accountProfileEmail"></strong></div>
+                <p class="account-notice">Your profile is saved only in this browser.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="orderHistoryModal" role="dialog" aria-modal="true" aria-labelledby="orderHistoryTitle">
+        <div class="modal-content account-modal-content">
+            <button class="modal-close" id="orderHistoryClose" aria-label="Close order history">&times;</button>
+            <div class="modal-body account-modal-body">
+                <p class="auth-eyebrow">YOUR TECHHUB PURCHASES</p>
+                <h2 id="orderHistoryTitle">Order history</h2>
+                <div id="orderHistoryContent" class="order-history-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+        <div class="modal-content checkout-modal-content">
+            <button class="modal-close" id="checkoutModalClose" aria-label="Close checkout">&times;</button>
+            <div class="modal-body">
+                <h2 id="checkoutTitle">Checkout</h2>
+                <form id="checkoutForm">
+                    <div class="checkout-section">
+                        <h3>Shipping Information</h3>
+                        <div class="form-group">
+                            <label for="checkoutName">Full Name</label>
+                            <input type="text" id="checkoutName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="checkoutEmail">Email Address</label>
+                            <input type="email" id="checkoutEmail" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="checkoutAddress">Address</label>
+                            <input type="text" id="checkoutAddress" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="checkoutCity">City</label>
+                                <input type="text" id="checkoutCity" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="checkoutZip">Zip Code</label>
+                                <input type="text" id="checkoutZip" required>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+
+                    <p class="account-notice checkout-notice">No payment is collected. Your order is saved only in this browser and is not sent for fulfillment.</p>
+                    <button type="submit" class="submit-btn checkout-submit">Place order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bill Modal -->
+    <div class="modal" id="billModal" role="dialog" aria-modal="true" aria-labelledby="invoiceDialogTitle">
+        <div class="modal-content bill-modal-content">
+            <button class="modal-close" id="billModalClose" aria-label="Close invoice">&times;</button>
+            <div class="modal-body">
+                <div id="billContent"></div>
+                <div class="bill-actions">
+                    <button id="printBillBtn" class="action-btn print-btn">🖨️ Print Bill</button>
+                    <button id="closeBillBtn" class="action-btn close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-bg-effects">
+            <div class="grid-lines"></div>
+            <div class="glow-orb glow-1"></div>
+            <div class="glow-orb glow-2"></div>
+            <div class="glow-orb glow-3"></div>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-icon">✦</span>
+                <span>Thoughtfully picked tech</span>
+            </div>
+            <h1>Good tech.<br><span class="brand-highlight">Better every day.</span></h1>
+            <p class="hero-tagline">Meet your next favorite thing.</p>
+            <p class="hero-description">From everyday essentials to clever upgrades, discover well-loved tech picked to make life a little easier—and a lot more fun.</p>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">12</span>
+                    <span class="stat-label">Products</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Categories</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">4.5</span>
+                    <span class="stat-label">Avg. rating</span>
+                </div>
+            </div>
+
+            <div class="hero-buttons">
+                <button class="cta-button primary" onclick="document.getElementById('products').scrollIntoView({behavior: 'smooth'})">
+                    <span>🛒</span> Shop Now
+                </button>
+                <button class="cta-button secondary" onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})">
+                    <span>✦</span> Why TechHub?
+                </button>
+            </div>
+
+            <div class="hero-features">
+                <div class="feature-item">
+                    <span class="feature-icon">⚡</span>
+                    <span>Fast Shipping</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🛡️</span>
+                    <span>Secure Payment</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🔄</span>
+                    <span>Easy Returns</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-image">
+            <div class="hero-gadget-showcase">
+                <!-- Main Device -->
+                <div class="gadget main-gadget">
+                    <div class="gadget-screen">
+                        <div class="screen-content">
+                            <span class="app-icon">📱</span>
+                            <span class="app-icon">💻</span>
+                            <span class="app-icon">🎧</span>
+                            <span class="app-icon">⌚</span>
+                        </div>
+                    </div>
+                    <div class="gadget-body"></div>
+                </div>
+
+                <!-- Floating Gadgets -->
+                <div class="gadget floating-gadget-1">
+                    <span class="gadget-emoji">🎧</span>
+                </div>
+                <div class="gadget floating-gadget-2">
+                    <span class="gadget-emoji">⌚</span>
+                </div>
+                <div class="gadget floating-gadget-3">
+                    <span class="gadget-emoji">📱</span>
+                </div>
+                <div class="gadget floating-gadget-4">
+                    <span class="gadget-emoji">💻</span>
+                </div>
+
+                <!-- Tech Decorations -->
+                <div class="tech-line tech-line-1"></div>
+                <div class="tech-line tech-line-2"></div>
+                <div class="tech-dot tech-dot-1"></div>
+                <div class="tech-dot tech-dot-2"></div>
+                <div class="tech-dot tech-dot-3"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products-section" id="products">
+        <div class="container">
+            <h2 class="section-title">Our Products</h2>
+            
+            <!-- Filter Buttons -->
+            <div class="filter-container">
+                <button class="filter-btn active" data-filter="all">All Products</button>
+                <button class="filter-btn" data-filter="electronics">Electronics</button>
+                <button class="filter-btn" data-filter="accessories">Accessories</button>
+                <button class="filter-btn" data-filter="gadgets">Gadgets</button>
+            </div>
+
+            <!-- Products Gallery -->
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick View Modal -->
+    <div class="modal" id="quickViewModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-body">
+                <div class="modal-image">
+                    <img id="modalProductImage" src="" alt="Product">
+                </div>
+                <div class="modal-info">
+                    <h2 id="modalProductName"></h2>
+                    <p class="modal-category" id="modalProductCategory"></p>
+                    <p id="modalProductDescription"></p>
+                    <div class="modal-rating">
+                        <span id="modalProductRating"></span>
+                        <span class="stars"></span>
+                    </div>
+                    <div class="modal-price">
+                        <span id="modalProductPrice"></span>
+                    </div>
+                    <button class="add-to-cart-btn" id="modalAddToCart">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <section class="footer" id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About TechHub</h3>
+                <p>Your ultimate destination for premium tech products and gadgets.</p>
+            </div>
+            <div class="footer-section">
+              <div class="footer-section">
+    <h3>Contact Us</h3>
+    <ul class="contact-links" style="list-style: none; padding: 0;">
+        <li style="margin-bottom: 15px; display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-phone-alt" style="color: #87ceeb;"></i> +91 98765xxxxx
+            </a>
+        </li>
+        <li style="color: #b0b0b0; display: flex; align-items: center; gap: 12px;">
+            <i class="fas fa-map-marker-alt" style="color: #87ceeb;"></i> Kanpur, Uttar Pradesh, India
+        </li>
+    </ul>
+</div> 
+            
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TechHub. All rights reserved.</p>
+        </div>
+    </section>
+
+    <script src="ecommerce-script.js"></script>
+</body>
+</html>
